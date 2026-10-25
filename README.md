@@ -7,6 +7,8 @@ A macOS "browser" that never shows a web page. Set it as the default browser and
 
 A rule for `linkedin.com` matches `linkedin.com` and every `*.linkedin.com`. The most specific rule wins; other links go to the default target (Safari if none is set).
 
+![Brouwster settings: domain rules routing linkedin.com, docs.google.com, github.com and notion.so to a Chrome work profile and youtube.com to a personal profile](docs/settings.webp)
+
 ## Build and install
 
 ```sh
