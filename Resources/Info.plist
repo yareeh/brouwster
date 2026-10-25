@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleIdentifier</key>
-	<string>fi.lakeview.brouwster</string>
+	<string>yareeh.brouwster</string>
 	<key>CFBundleName</key>
 	<string>Brouwster</string>
 	<key>CFBundleDisplayName</key>

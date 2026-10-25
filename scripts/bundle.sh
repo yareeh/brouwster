@@ -15,7 +15,7 @@ echo "Built $app"
 if [[ "${1:-}" == "--install" ]]; then
   dest=~/Applications/Brouwster.app
   mkdir -p ~/Applications
-  osascript -e 'quit app id "fi.lakeview.brouwster"' 2>/dev/null || true
+  osascript -e 'quit app id "yareeh.brouwster"' 2>/dev/null || true
   rm -rf "$dest"
   cp -R "$app" "$dest"
   /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f "$dest"
