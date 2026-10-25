@@ -19,4 +19,20 @@ import BrouwsterCore
             "--profile-directory=Profile 1", "https://www.linkedin.com/feed/",
         ]))
     }
+
+    @Test func selectsFirefoxProfileByName() {
+        let firefoxApp = URL(fileURLWithPath: "/Applications/Firefox.app")
+        let target = BrowserTarget(bundleIdentifier: "org.mozilla.firefox", profileDirectory: "Work Stuff")
+        let plan = LaunchPlan(target: target, applicationURL: firefoxApp, url: page)
+        #expect(plan == .run(executable: "/usr/bin/open", arguments: [
+            "-n", "-a", "/Applications/Firefox.app", "--args",
+            "-P", "Work Stuff", "https://www.linkedin.com/feed/",
+        ]))
+    }
+
+    @Test func ignoresProfileForBrowserWithoutProfileSupport() {
+        let safariApp = URL(fileURLWithPath: "/Applications/Safari.app")
+        let target = BrowserTarget(bundleIdentifier: "com.apple.Safari", profileDirectory: "Work")
+        #expect(LaunchPlan(target: target, applicationURL: safariApp, url: page) == .open(url: page, application: safariApp))
+    }
 }

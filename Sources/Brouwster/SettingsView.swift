@@ -109,7 +109,9 @@ private struct BrowsersTab: View {
                             Text(profile.name)
                             if let email = profile.email { Text(email).foregroundStyle(.secondary) }
                             Spacer()
-                            Text(profile.directory).foregroundStyle(.tertiary).font(.caption)
+                            if profile.directory != profile.name {
+                                Text(profile.directory).foregroundStyle(.tertiary).font(.caption)
+                            }
                         }
                         .padding(.leading, 32)
                     }

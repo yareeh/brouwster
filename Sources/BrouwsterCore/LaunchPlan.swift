@@ -8,13 +8,14 @@ public enum LaunchPlan: Equatable, Sendable {
     case run(executable: String, arguments: [String])
 
     public init(target: BrowserTarget, applicationURL: URL, url: URL) {
-        guard let profile = target.profileDirectory else {
+        guard let profile = target.profileDirectory,
+              let family = BrowserFamily(bundleIdentifier: target.bundleIdentifier) else {
             self = .open(url: url, application: applicationURL)
             return
         }
-        self = .run(executable: "/usr/bin/open", arguments: [
-            "-n", "-a", applicationURL.path, "--args",
-            "--profile-directory=\(profile)", url.absoluteString,
-        ])
+        self = .run(
+            executable: "/usr/bin/open",
+            arguments: ["-n", "-a", applicationURL.path, "--args"] + family.profileArguments(profile) + [url.absoluteString]
+        )
     }
 }

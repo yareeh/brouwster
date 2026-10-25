@@ -24,8 +24,7 @@ enum BrowserCatalog {
                 let name = (bundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String)
                     ?? (bundle.object(forInfoDictionaryKey: "CFBundleName") as? String)
                     ?? url.deletingPathExtension().lastPathComponent
-                let profiles = ChromiumBrowsers.userDataDirectory(forBundleIdentifier: id)
-                    .map { ChromiumProfileScanner().profiles(inUserDataDirectory: $0) } ?? []
+                let profiles = BrowserFamily.profiles(forBundleIdentifier: id)
                 return InstalledBrowser(bundleIdentifier: id, name: name, applicationURL: url, profiles: profiles)
             }
             .sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
