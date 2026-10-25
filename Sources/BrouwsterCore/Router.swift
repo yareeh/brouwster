@@ -8,9 +8,13 @@ public struct Router: Sendable {
         self.config = config
     }
 
+    /// The target of the most specific matching rule, else the default target.
     public func target(for url: URL) -> BrowserTarget? {
         let host = url.host ?? ""
-        return config.rules.first { DomainMatch.host(host, isWithin: $0.domain) }?.target
+        return config.rules
+            .filter { DomainMatch.host(host, isWithin: $0.domain) }
+            .max { DomainMatch.normalize($0.domain).count < DomainMatch.normalize($1.domain).count }?
+            .target
             ?? config.defaultTarget
     }
 }

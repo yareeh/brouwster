@@ -9,9 +9,13 @@ enum DomainMatch {
         return host == domain || host.hasSuffix("." + domain)
     }
 
+    /// Reduces user input like "*.Example.com", "https://www.example.com/x" or "example.com/" to a bare host.
     static func normalize(_ value: String) -> String {
-        var value = value.trimmingCharacters(in: .whitespaces).lowercased()
+        var value = value.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        if let schemeEnd = value.range(of: "://") { value = String(value[schemeEnd.upperBound...]) }
+        if let pathStart = value.firstIndex(where: { "/?#".contains($0) }) { value = String(value[..<pathStart]) }
         if value.hasPrefix("*.") { value.removeFirst(2) }
+        if value.hasPrefix("www.") { value.removeFirst(4) }
         while value.hasSuffix(".") { value.removeLast() }
         return value
     }

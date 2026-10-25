@@ -25,4 +25,26 @@ import BrouwsterCore
     func domainRuleIgnoresLookalikeHosts(url: String) {
         #expect(route(url, rules: [DomainRule(domain: "linkedin.com", target: chromeWork)], default: safari) == safari)
     }
+
+    @Test func mostSpecificRuleWinsRegardlessOfOrder() {
+        let rules = [
+            DomainRule(domain: "google.com", target: edge),
+            DomainRule(domain: "mail.google.com", target: chromeWork),
+        ]
+        #expect(route("https://mail.google.com/u/0", rules: rules) == chromeWork)
+        #expect(route("https://inbox.mail.google.com/", rules: rules) == chromeWork)
+        #expect(route("https://docs.google.com/", rules: rules) == edge)
+        #expect(route("https://mail.google.com/", rules: rules.reversed()) == chromeWork)
+    }
+
+    @Test(arguments: ["*.linkedin.com", " LinkedIn.com ", "https://www.linkedin.com/feed", "linkedin.com/"])
+    func toleratesHowUsersTypeDomains(domain: String) {
+        #expect(route("https://linkedin.com/", rules: [DomainRule(domain: domain, target: chromeWork)]) == chromeWork)
+    }
+
+    @Test func fallsBackToDefaultOrNothing() {
+        let rules = [DomainRule(domain: "linkedin.com", target: chromeWork)]
+        #expect(route("https://example.com/", rules: rules, default: safari) == safari)
+        #expect(route("https://example.com/", rules: rules) == nil)
+    }
 }
