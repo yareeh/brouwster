@@ -37,6 +37,38 @@ import BrouwsterCore
         #expect(profiles == [BrowserProfile(directory: "Profile 3", name: "Profile 3", email: nil)])
     }
 
+    @Test func readsFirefoxProfilesFromProfilesIni() throws {
+        try Data("""
+        [Profile1]
+        Name=default
+        IsRelative=1
+        Path=Profiles/mizji9q6.default
+        Default=1
+
+        [Profile0]
+        Name=Work Stuff
+        IsRelative=1
+        Path=Profiles/0yzbry8u.work
+
+        [General]
+        StartWithLastProfile=1
+        Version=2
+
+        [Install2656FF1E876E9973]
+        Default=Profiles/0yzbry8u.work
+        Locked=1
+        """.utf8).write(to: dataDirectory.appendingPathComponent("profiles.ini"))
+        let profiles = FirefoxProfileScanner().profiles(inProfilesDirectory: dataDirectory)
+        #expect(profiles == [
+            BrowserProfile(directory: "default", name: "default", email: nil),
+            BrowserProfile(directory: "Work Stuff", name: "Work Stuff", email: nil),
+        ])
+    }
+
+    @Test func returnsNoFirefoxProfilesWithoutProfilesIni() {
+        #expect(FirefoxProfileScanner().profiles(inProfilesDirectory: dataDirectory).isEmpty)
+    }
+
     @Test func returnsNoProfilesForMissingOrBrokenLocalState() throws {
         #expect(ChromiumProfileScanner().profiles(inUserDataDirectory: dataDirectory).isEmpty)
         try writeLocalState("not json")
