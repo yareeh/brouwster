@@ -24,3 +24,7 @@ Config lives in `~/Library/Application Support/Brouwster/config.json`.
 - `Sources/BrouwsterCore` — tested logic: `URLCleaner`, `Router`, `ChromiumProfileScanner`, `FirefoxProfileScanner`, `LaunchPlan`, `ConfigStore`.
 - `Sources/Brouwster` — thin AppKit/SwiftUI adapters: Launch Services browser discovery, URL handling, settings UI.
 - `open Package.swift` opens the project in Xcode.
+
+## License
+
+MIT, see [LICENSE](LICENSE).
