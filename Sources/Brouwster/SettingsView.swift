@@ -43,6 +43,8 @@ private struct RulesTab: View {
                     Spacer()
                     if !model.isDefaultBrowser {
                         Button("Make Default Browser") { model.makeDefaultBrowser() }
+                            .disabled(model.routerURL == nil)
+                            .help(model.routerURL == nil ? "Run the bundled app to set the default browser." : "")
                     }
                 }
                 Picker("Open other links in", selection: $model.config.defaultTarget) {

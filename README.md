@@ -17,14 +17,20 @@ scripts/bundle.sh --install  # build, copy to ~/Applications and register with L
 open ~/Applications/Brouwster.app
 ```
 
-Open Brouwster to get the settings window, then **Make Default Browser** (macOS asks for confirmation). Opening it again from Finder/Spotlight brings the settings back; while routing links it runs without a Dock icon.
+Brouwster is two apps in one bundle:
+
+- **Brouwster.app** — the settings window, an ordinary app that quits when you close it.
+- **Brouwster Router.app** (inside `Contents/Helpers`) — a background app with no window or Dock icon that is registered as the default browser and handles links. It re-reads the config for every link, so rule changes apply immediately.
+
+Open Brouwster and click **Make Default Browser** (macOS asks for confirmation); this makes the router the default.
 
 Config lives in `~/Library/Application Support/Brouwster/config.json`.
 
 ## Layout
 
 - `Sources/BrouwsterCore` — tested logic: `URLCleaner`, `Router`, `ChromiumProfileScanner`, `FirefoxProfileScanner`, `LaunchPlan`, `ConfigStore`.
-- `Sources/Brouwster` — thin AppKit/SwiftUI adapters: Launch Services browser discovery, URL handling, settings UI.
+- `Sources/Brouwster` — settings app: Launch Services browser discovery and the SwiftUI settings window.
+- `Sources/BrouwsterRouter` — background link handler using `LinkOpener` from the core.
 - `open Package.swift` opens the project in Xcode.
 
 ## License

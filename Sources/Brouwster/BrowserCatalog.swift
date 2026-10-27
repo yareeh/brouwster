@@ -14,13 +14,12 @@ struct InstalledBrowser: Identifiable, Hashable {
 /// Finds the browsers installed on this Mac via Launch Services.
 enum BrowserCatalog {
     static func scan() -> [InstalledBrowser] {
-        let ownID = Bundle.main.bundleIdentifier
         let apps = NSWorkspace.shared.urlsForApplications(toOpen: URL(string: "https://example.com")!)
         var seen = Set<String>()
         return apps
             .compactMap { url -> InstalledBrowser? in
                 guard let bundle = Bundle(url: url), let id = bundle.bundleIdentifier,
-                      id != ownID, seen.insert(id).inserted else { return nil }
+                      !id.hasPrefix("yareeh.brouwster"), seen.insert(id).inserted else { return nil }
                 let name = (bundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String)
                     ?? (bundle.object(forInfoDictionaryKey: "CFBundleName") as? String)
                     ?? url.deletingPathExtension().lastPathComponent

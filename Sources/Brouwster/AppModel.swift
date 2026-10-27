@@ -12,8 +12,14 @@ final class AppModel {
 
     private let store: ConfigStore
     private let cleaner = URLCleaner()
-    /// Used when no rule matches and no default is set.
-    private let fallback = BrowserTarget(bundleIdentifier: "com.apple.Safari")
+    private let fallback = LinkOpener.fallback
+
+    static let routerBundleIdentifier = "yareeh.brouwster.router"
+    /// The embedded router; missing when run outside the app bundle, e.g. with `swift run`.
+    var routerURL: URL? {
+        let url = Bundle.main.bundleURL.appendingPathComponent("Contents/Helpers/Brouwster Router.app")
+        return FileManager.default.fileExists(atPath: url.path) ? url : nil
+    }
 
     init(store: ConfigStore = .standard) {
         self.store = store
@@ -28,30 +34,10 @@ final class AppModel {
 
     // MARK: Routing
 
-    func open(_ url: URL) {
-        let cleaned = cleaner.clean(url)
-        let target = Router(config: config).target(for: cleaned) ?? fallback
-        guard let appURL = applicationURL(for: target) ?? applicationURL(for: fallback) else { return }
-        switch LaunchPlan(target: target, applicationURL: appURL, url: cleaned) {
-        case let .open(url, application):
-            NSWorkspace.shared.open([url], withApplicationAt: application, configuration: NSWorkspace.OpenConfiguration())
-        case let .run(executable, arguments):
-            let process = Process()
-            process.executableURL = URL(fileURLWithPath: executable)
-            process.arguments = arguments
-            try? process.run()
-        }
-    }
-
     func preview(_ text: String) -> (cleaned: URL, target: BrowserTarget?)? {
         guard let url = URL(string: text.trimmingCharacters(in: .whitespaces)), url.host != nil else { return nil }
         let cleaned = cleaner.clean(url)
         return (cleaned, Router(config: config).target(for: cleaned))
-    }
-
-    private func applicationURL(for target: BrowserTarget) -> URL? {
-        browsers.first { $0.bundleIdentifier == target.bundleIdentifier }?.applicationURL
-            ?? NSWorkspace.shared.urlForApplication(withBundleIdentifier: target.bundleIdentifier)
     }
 
     // MARK: Rules
@@ -92,11 +78,12 @@ final class AppModel {
 
     func refreshDefaultBrowserStatus() {
         let handler = NSWorkspace.shared.urlForApplication(toOpen: URL(string: "https://example.com")!)
-        isDefaultBrowser = handler.flatMap { Bundle(url: $0)?.bundleIdentifier } == Bundle.main.bundleIdentifier
+        isDefaultBrowser = handler.flatMap { Bundle(url: $0)?.bundleIdentifier } == Self.routerBundleIdentifier
     }
 
     func makeDefaultBrowser() {
-        NSWorkspace.shared.setDefaultApplication(at: Bundle.main.bundleURL, toOpenURLsWithScheme: "http") { _ in
+        guard let routerURL else { return }
+        NSWorkspace.shared.setDefaultApplication(at: routerURL, toOpenURLsWithScheme: "http") { _ in
             Task { @MainActor in self.refreshDefaultBrowserStatus() }
         }
     }
